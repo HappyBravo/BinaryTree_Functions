@@ -1,6 +1,7 @@
 // #include<stdio.h>
 // #include<stdlib.h>
 #include "python_function.c" // FROM "https://github.com/HappyBravo/python_functions_in_C"
+#include <stdarg.h>
 
 struct btElement { // DEFINING ELEMENT FOR BINARY TREE
   int data;
@@ -11,46 +12,22 @@ struct btElement { // DEFINING ELEMENT FOR BINARY TREE
 typedef struct btElement btNode;
 btNode *root = NULL;
 
-/*
-int height(btNode *root){
-  if(!(isExternal(root))) return 0;
+int btheight(btNode *root){
+  int left = 1;
+  int right = 1;
   
-  return height(root);
-}
-*/
+  if(!(root)) return 0;
 
-int isEmpty(btNode *root)
-{
-  if(!(root))
-    return 1;
-  return 0;
-}
-
-int isRoot(btNode *root){
-  if (root){
-    if ((root->right == NULL) && (root->left == NULL))
-      return 1;
-    return 0;
+  if (root->left){
+    left = 1 + btheight(root->left);
   }
-}
-
-node *children(btNode *root, int d){
-  node *listHead = NULL;
-  if (root){
-    if (d == root->data){
-      if (root->left != NULL){
-        listHead = python_append(listHead, root->left->data);
-      }
-      if (root->right != NULL){
-        listHead = python_append(listHead, root->right->data);
-      }
-      return listHead;
-    }
-    listHead = children(root->left, d);
-    listHead = children(root->right, d);
-    // return (isInternal(root->left, d)+isInternal(root->right, d));
+  if (root->right){
+    right = 1 + btheight(root->right);
   }
-  return listHead;
+  if (right>left) return right;
+  return left;
+
+  // return ;
 }
 
 int isInternal(btNode *root, int d){
@@ -77,6 +54,99 @@ int isExternal(btNode *root, int d){
   return 0;
 }
 
+int isPresent(btNode *root, int dat){
+  if (isInternal(root, dat)+isExternal(root, dat)) return 1;
+  return 0;
+}
+
+int btNode_level_main(btNode *root, int dat){
+  int level = 0;
+  int d = 0;
+
+  if (!(root)) return 0;
+
+  if (root->data == dat){
+    return 1;
+  }
+
+  if (root->left){
+    level = btNode_level_main(root->left, dat);
+    if(level) return level + 1;
+  }
+  if (root->right){
+    level = btNode_level_main(root->right, dat);
+    if(level) return level + 1;
+  }
+  return level;
+}
+
+int btNode_level(btNode *root, int dat){
+  if (isPresent(root, dat)){
+    return btNode_level_main(root, dat)-1;
+  }
+  return -1;
+}
+
+int bt_parent_main(btNode *root, int d){
+  if (!(root)) return 0;
+  int p = 0;
+  
+  if (root->left){
+    if (root->left->data == d) return root->data;
+    p = bt_parent_main(root->left, d);
+    if (p) return p;
+  }
+  if (root->right){
+    if(root->right->data == d) return root->data;
+    p = bt_parent_main(root->right, d);
+    if (p) return p;
+  }
+}
+
+int bt_parent(btNode *root, int d){
+  if (isPresent(root, d)) return bt_parent_main(root, d);
+  return -1;
+}
+
+int isEmpty(btNode *root)
+{
+  if(!(root))
+    return 1;
+  return 0;
+}
+
+int isRoot(btNode *root){
+  if (root){
+    if ((root->right == NULL) && (root->left == NULL))
+      return 1;
+    return 0;
+  }
+}
+
+node *bt_children_main(btNode *root, int d){
+  node *listHead = create_list(0);
+  if (root){
+    if (d == root->data){
+      if (root->left != NULL){
+        listHead = python_append(listHead, root->left->data);
+      }
+      if (root->right != NULL){
+        listHead = python_append(listHead, root->right->data);
+      }
+      return listHead;
+    }
+    listHead = bt_children_main(root->left, d);
+    if (listHead) return listHead;
+    listHead = bt_children_main(root->right, d);
+  }
+  return listHead;
+}
+
+node *bt_children(btNode *root, int d){
+  if (isPresent(root, d)) return bt_children_main(root, d);
+  return create_list(0);
+}
+
 btNode *makeNode(int d) {
   btNode *new_node;
   new_node = malloc(sizeof(btNode));
@@ -84,6 +154,110 @@ btNode *makeNode(int d) {
   new_node->left = new_node->right = NULL;
   return new_node;
 }
+
+// %%%%%%%%%% NON-RECURSIVE FUNCTIONS %%%%%%%%%%%%%
+
+void bt_inorder_nonrec(btNode *root){ 
+  // Morris Inorder Traversal
+
+  btNode *temp = root;
+  btNode *p ;
+  while(temp){
+    if (!(temp->left)){
+      printf("%d\t", temp->data);
+      temp = temp->right;
+    }
+    else{
+      p = temp->left;
+      while( (p->right) && (p->right != temp)){
+        p = p->right;
+      }
+      if (!(p->right)){
+        p->right = temp;
+        temp = temp->left;
+      }
+      else{
+        p->right = NULL;
+        printf("%d\t", temp->data);
+        temp = temp->right;
+      }
+    }
+  }
+}
+
+void bt_preorder_nonrec(btNode *root){
+  // Morris Preorder Traversal
+
+  btNode *temp = root;
+  btNode *p;
+  while(temp){
+    if (!(temp->left)){
+      printf("%d\t", temp->data);
+      temp = temp->right;
+    }
+    else {
+      p = temp->left;
+      while( (p->right) && (p->right != temp) ){
+        p = p->right;
+      }
+      if(p->right == temp){
+        p->right = NULL;
+        temp = temp->right;
+      }
+      else{
+        printf("%d\t", temp->data);
+        p->right = temp;
+        temp = temp->left;
+      }
+    }
+  }
+}
+
+node *bt_postorder_nonrec_main(btNode *root){
+  // similar to Morris preorder Traversal, but swapped left and right
+
+  btNode *temp = root;
+  node *post = create_list(0);
+  btNode *p;
+  while(temp){
+    if(!(temp->right)){
+      // printf("%d\t", temp->data);
+      post = python_append(post, temp->data);
+      temp = temp->left;
+    }
+    else{
+      p = temp->right;
+      while ((p->left) && (p->left != temp)){
+        p = p->left;
+      }
+      if(!(p->left)){
+        // printf("%d\t", temp->data);
+        post = python_append(post, temp->data);
+        p->left = temp;
+        temp = temp->right;
+      }
+      else{
+        p->left = NULL;
+        temp = temp->left;
+      }
+    }
+  }
+  return post;
+  // printf("");
+}
+
+void bt_postorder_nonrec(btNode *root){
+  node *temp = NULL;
+  temp = bt_postorder_nonrec_main(root);
+  temp = python_reverse(temp);
+  while(temp){
+    printf("%d\t", temp->data);
+    temp = temp->next;
+  }
+}
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 // %%%%%%%%%% RECURSIVE FUNCTIONS %%%%%%%%%%%%%
 
@@ -114,6 +288,22 @@ void bt_postorder(btNode *root){
   }  
 }
 
+void bt_levelorder_main(btNode *root, int l){
+  if(!(root)) return;
+  if (l == 1) printf("%d\t", root->data);
+  else if (l>1){
+    bt_levelorder_main(root->left, l-1);
+    bt_levelorder_main(root->right, l-1);
+  }
+}
+
+void bt_levelorder(btNode *root){
+  int h = btheight(root);
+  for (int i = 1; i<=h; i++){
+    bt_levelorder_main(root, i);
+  }
+}
+
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -138,6 +328,7 @@ btNode *insertRight(btNode *root, int d){
 }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+/*
 void display(btNode *ptr, int level)
 {
     int i;
@@ -150,12 +341,14 @@ void display(btNode *ptr, int level)
       display(ptr->left, level+1);
     }
 }
+*/
 
 // %%%%%%%%%% MY TREE DISPLAY FUNCTION %%%%%%%%%%%%%%
 
 int _print_t(btNode *tree, int is_left, int offset, int depth, char s[20][255])
 {
     char b[20];
+    // char s[20][255];
     int width = 5;
 
     if (!tree) return 0;
@@ -195,7 +388,8 @@ int _print_t(btNode *tree, int is_left, int offset, int depth, char s[20][255])
         s[2 * depth - 1][offset + left + width/2] = '+';
         s[2 * depth - 1][offset + left + width + right + width/2] = '+';
 
-    } else if (depth && !is_left) {
+    } 
+    else if (depth && !is_left) {
 
         for (int i = 0; i < left + width; i++)
             s[2 * depth - 1][offset - width/2 + i] = '-';
@@ -210,13 +404,16 @@ int _print_t(btNode *tree, int is_left, int offset, int depth, char s[20][255])
 
 void print_t(btNode *tree)
 {
-    char s[20][255];
-    for (int i = 0; i < 20; i++)
+    int h = btheight(tree)+6;
+    char s[h][255];
+
+    for (int i = 0; i < h; i++)
         sprintf(s[i], "%80s", " ");
 
     _print_t(tree, 0, 0, 0, s);
 
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < h; i++)
         printf("%s\n", s[i]);
 }
+
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
