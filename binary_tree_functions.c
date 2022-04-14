@@ -378,7 +378,7 @@ btNode *bt_deepestNodeAddress(btNode *root, int tree_height){
   btNode *res = NULL;
   if(!(root)) return root;
   if(h == 1) {
-    printf("%d", root->data);
+    // printf("%d", root->data);
     return root;
   }
   else if (h>1){
