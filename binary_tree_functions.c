@@ -1,7 +1,8 @@
 // #include<stdio.h>
 // #include<stdlib.h>
+// #include <stdarg.h>
 #include "python_function.c" // FROM "https://github.com/HappyBravo/python_functions_in_C"
-#include <stdarg.h>
+
 
 struct btElement { // DEFINING ELEMENT FOR BINARY TREE
   int data;
@@ -59,9 +60,54 @@ int isPresent(btNode *root, int dat){
   return 0;
 }
 
+
+int bt_findMax_main(btNode *root){
+  int left;
+  int Max = 0;
+  int right;
+  if (root) {
+    Max = root->data;
+    left = bt_findMax_main(root->left);
+    right = bt_findMax_main(root->right);
+
+    if(Max <= left) Max = left;
+    else if (Max <= right) Max = right;
+  }
+  return Max;
+}
+
+int bt_findMax(btNode *root) {
+    if (!(root)) return -1;
+    return bt_findMax_main(root);
+}
+
+
+int bt_findMin_main(btNode *root){
+  int left;
+  int Min;
+  int right;
+  if (root) {
+    Min = root->data;
+    left = bt_findMin_main(root->left);
+    right = bt_findMin_main(root->right);
+
+    if(Min >= left) Min = left;
+    else if (Min >= right) Min = right;
+  }
+  return Min;
+}
+
+int bt_findMin(btNode *root) {
+    if (!(root)) return -1;
+    return bt_findMin_main(root);
+}
+
+
+
+
 int btNode_level_main(btNode *root, int dat){
   int level = 0;
-  int d = 0;
+  // int d = 0;
 
   if (!(root)) return 0;
 
@@ -155,7 +201,7 @@ btNode *makeNode(int d) {
   return new_node;
 }
 
-// %%%%%%%%%% NON-RECURSIVE FUNCTIONS %%%%%%%%%%%%%
+// %%%%%%%%%% NON-RECURSIVE TRANVERSAL FUNCTIONS %%%%%%%%%%%%%
 
 void bt_inorder_nonrec(btNode *root){ 
   // Morris Inorder Traversal
@@ -259,7 +305,7 @@ void bt_postorder_nonrec(btNode *root){
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-// %%%%%%%%%% RECURSIVE FUNCTIONS %%%%%%%%%%%%%
+// %%%%%%%%%% RECURSIVE TRANVERSAL FUNCTIONS %%%%%%%%%%%%%
 
 void bt_inorder(btNode *root) {
   // LEFT - DATA - RIGHT
@@ -327,6 +373,71 @@ btNode *insertRight(btNode *root, int d){
   return root->right;
 }
 
+btNode *bt_deepestNodeAddress(btNode *root, int tree_height){
+  int h = tree_height;
+  btNode *res = NULL;
+  if(!(root)) return root;
+  if(h == 1) {
+    printf("%d", root->data);
+    return root;
+  }
+  else if (h>1){
+    res = bt_deepestNodeAddress(root->left, h-1);
+    if(res) return res;
+    res = bt_deepestNodeAddress(root->right, h-1);
+    if(res) return res;
+  }
+  // return root;
+
+}
+
+btNode *bt_deleteNode_main(btNode *root, int d){
+  btNode *temp = root;
+  // if (!(root->left) + !(root->right)){
+  //   if (root->data == d) return NULL;
+  //   else return root;
+  // }
+  // btNode *p = NULL;
+  // btNode *addr = NULL;
+  // while(!p){
+  //   temp = root;
+  //   if (temp->data == d) addr = temp;
+  //   if (temp->left) p = temp->left;
+  //   if ()
+
+  // }
+  
+  if (temp->data == d){
+    if (!(temp->left)){
+      temp = root->right;
+      root = NULL;
+      return temp;
+    }
+    else if (!(temp->left)){
+      temp = root->right;
+      root = NULL;
+      return temp;
+    }
+    else{
+      temp = bt_deepestNodeAddress(root->right, btheight(root->right));
+      root->data = temp->data;
+      root->right = bt_deleteNode_main(root->right, temp->data);
+      // temp = root->left;
+    }
+
+  }
+  if (root->right) root->right = bt_deleteNode_main(root->right, d);
+  if (root->left) root->left = bt_deleteNode_main(root->left, d);
+
+  return root;
+}
+
+btNode *bt_deleteNode(btNode *root, int d){
+  if (!(root)) return root;
+  if (!(isPresent(root, d))) return root;
+  return bt_deleteNode_main(root, d);
+}
+
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 /*
 void display(btNode *ptr, int level)
@@ -343,7 +454,7 @@ void display(btNode *ptr, int level)
 }
 */
 
-// %%%%%%%%%% MY TREE DISPLAY FUNCTION %%%%%%%%%%%%%%
+// %%%%%%%%%% TREE DISPLAY FUNCTION %%%%%%%%%%%%%%
 
 int _print_t(btNode *tree, int is_left, int offset, int depth, char s[20][255])
 {

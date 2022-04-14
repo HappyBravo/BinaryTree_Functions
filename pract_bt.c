@@ -30,29 +30,33 @@ int main(){
 
   
   btNode *emproot = NULL;
+  print_t(root);
+  // printf("deepest node = %d", bt_deepestNodeAddress(root, btheight(root))->data);
+  printf("\nDEleting\n");
+  print_t(bt_deleteNode(root, 11));
 
   // printf("%d\n\n\n", isEmpty(root));
-  print_t(root);
-  printf("\n---- INORDER RECURSIVE\n");
-  bt_inorder(root);
-  printf("\n\nINORDER NON RECURSIVE\n");
-  bt_inorder_nonrec(root);
+  // print_t(root);
+  // printf("\n---- INORDER RECURSIVE\n");
+  // bt_inorder(root);
+  // printf("\n\nINORDER NON RECURSIVE\n");
+  // bt_inorder_nonrec(root);
 
-  printf("\n");
-  printf("\n---- PREORDER RECURSIVE\n");
-  bt_preorder(root);
   // printf("\n");
-  printf("\n\nPREORDER NON RECURSIVE\n");
-  bt_preorder_nonrec(root);
+  // printf("\n---- PREORDER RECURSIVE\n");
+  // bt_preorder(root);
+  // // printf("\n");
+  // printf("\n\nPREORDER NON RECURSIVE\n");
+  // bt_preorder_nonrec(root);
+  // // bt_postorder(root);
+  // printf("\n---- POSTORDER RECURSIVE\n");
   // bt_postorder(root);
-  printf("\n---- POSTORDER RECURSIVE\n");
-  bt_postorder(root);
-  // printf("\n");
-  printf("\n\nPOSTORDER NON RECURSIVE\n");
-  bt_postorder_nonrec(root);
-  printf("\nHeight = %d\n", btheight(root));
-  printf("\n\nLEVEL ORDER TRAVERSAL\n");
-  bt_levelorder(root);
+  // // printf("\n");
+  // printf("\n\nPOSTORDER NON RECURSIVE\n");
+  // bt_postorder_nonrec(root);
+  // printf("\nHeight = %d\n", btheight(root));
+  // printf("\n\nLEVEL ORDER TRAVERSAL\n");
+  // bt_levelorder(root);
   /*
   printf("\nChecking Internal : \n");
   printf("%d", isInternal(root, 11));
