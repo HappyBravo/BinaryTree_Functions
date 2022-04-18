@@ -32,8 +32,13 @@ int main(){
   btNode *emproot = NULL;
   print_t(root);
   // printf("deepest node = %d", bt_deepestNodeAddress(root, btheight(root))->data);
-  printf("\nDEleting\n");
+  printf("\n\n----Deleting-----\n");
   print_t(bt_deleteNode(root, 11));
+
+  printf("\nSearching Element\n");
+  btNode *searched = searchElement(root, 30);
+  if(searched)  printf("%d", searched->data);
+  else printf("Not Present");
 
   // printf("%d\n\n\n", isEmpty(root));
   // print_t(root);
