@@ -60,6 +60,15 @@ int isPresent(btNode *root, int dat){
   return 0;
 }
 
+btNode *searchElement(btNode *root, int d){ // better than isPresent()
+  if (!(root)) return NULL;
+  if (root->data == d) return root;
+  btNode *got = NULL;
+  got = searchElement(root->left, d);
+  if (got) return got;
+  got = searchElement(root->right, d);
+  if(got) return got;
+}
 
 int bt_findMax_main(btNode *root){
   int left;
