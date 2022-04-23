@@ -40,6 +40,14 @@ int main(){
   if(searched)  printf("%d", searched->data);
   else printf("Not Present");
 
+  node *l = NULL;
+  l = create_list(atoi(python_input("\nEnter length of list : ")));
+  printList(l);
+
+  btNode *arr2bt = NULL;
+  arr2bt = makeBtfromArr(arr2bt, l);
+  print_t(arr2bt);
+
   // printf("%d\n\n\n", isEmpty(root));
   // print_t(root);
   // printf("\n---- INORDER RECURSIVE\n");
