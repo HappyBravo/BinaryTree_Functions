@@ -90,7 +90,6 @@ int bt_findMax(btNode *root) {
     return bt_findMax_main(root);
 }
 
-
 int bt_findMin_main(btNode *root){
   int left;
   int Min;
@@ -110,9 +109,6 @@ int bt_findMin(btNode *root) {
     if (!(root)) return -1;
     return bt_findMin_main(root);
 }
-
-
-
 
 int btNode_level_main(btNode *root, int dat){
   int level = 0;
@@ -209,6 +205,7 @@ btNode *makeNode(int d) {
   new_node->left = new_node->right = NULL;
   return new_node;
 }
+
 
 // %%%%%%%%%% NON-RECURSIVE TRANVERSAL FUNCTIONS %%%%%%%%%%%%%
 
@@ -464,7 +461,6 @@ void display(btNode *ptr, int level)
 */
 
 // %%%%%%%%%% TREE DISPLAY FUNCTION %%%%%%%%%%%%%%
-
 int _print_t(btNode *tree, int is_left, int offset, int depth, char s[20][255])
 {
     char b[20];
@@ -537,3 +533,39 @@ void print_t(btNode *tree)
 }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+// %%%%%%%%%% CREATING BINARY TREE FROM ARRAY %%%%%%%%%%%%%%
+btNode *makeBtfromArr(btNode *root, node *head){
+  node *queue = NULL;
+  btNode *temp = NULL;
+  if (!head) return NULL;
+
+  root = createNode(head->data); // FIRST ELEMENT IN ARRAY IS ROOT ELEMENT OF TREE
+  queue = python_append(queue, (unsigned int)root); // STORING ADDRESS OF ROOT IN QUEUE
+  
+  head = head->next; // NEXT ELEMENT IN ARRAY
+
+  while(head){
+    temp = (btNode*)python_atindex(queue, 0); // STORING ADDRESS OF NEW ROOT FOR NEW SUB-TREE
+    queue = python_remove(queue, 0); // REMOVING FROM QUEUE
+
+    btNode *left = NULL; // LEFT CHILD
+    btNode *right = NULL; // RIGHT CHILD
+
+    left = createNode(head->data); // MAKING LEFT NODE OF SUB-TREE 
+    queue = python_append(queue,(unsigned int)left); // ADDING ADDRESS OF LEFT CHILD IN QUEUE
+    head = head->next; // ADVANCING POINTER IN THE ARRAY
+
+    if(head){
+      right = createNode(head->data); // MAKING RIGHT NODE OF SUB-TREE
+      queue = python_append(queue, (unsigned int)right); // ADDING ADDRESS OF RIGHT CHILD IN QUEUE
+      head = head->next; // ADVANCING POINTER IN THE ARRAY
+    }
+
+    temp->left = left; // ADDING LEFT SUB-TREE IN THE MAIN TREE
+    temp->right = right; // ADDING RIGHT SUB-TREE IN THE MAIN TREE
+
+    // queue = python_remove(queue, 0); // REMOVING ROOT (OF SUB-TREE) FROM THE QUEUE
+  }
+return root;
+}
