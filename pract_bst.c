@@ -2,6 +2,7 @@
 
 int main(){
     btNode *root = NULL;
+    btNode *root2 = NULL;
     root = bst_insert(root,7);
     bst_insert(root, 13);
   
@@ -15,8 +16,28 @@ int main(){
     bst_insert(root, 10);
     bst_insert(root, 26);
     bst_insert(bst_insert(root, 14), 25);
+
+// TO CHECK BST
+    root2 = createNode(7);
+  insertLeft(root2, 3);
+  insertRight(root2, 13);
+  
+  insertRight(root2->left, 6);
+  insertLeft(root2->right, 11);
+  insertLeft(root2->left, 2);
+  insertRight(root2->right, 15);
+  
+  insertLeft(root2->left->right, 5);
+  insertRight(root2->right->left, 12);
+  insertLeft(root2->right->left, 10);
+  insertRight(root2->right->left->right, 26);
+  insertLeft(insertLeft(root2->right->left->right, 28), 30);
     
     print_t(root);
+    printf("\n - IS BST ? %d\n", isBST(root));
+    print_t(root2);
+    printf("\n - IS BST ? %d\n", isBST(root2));
+
     // printf("\nis BST ? %d", isBST(root));
     // int n = 15;
     // printf("\n%d is Present ? %d",n, bst_isPresent(root, n));
