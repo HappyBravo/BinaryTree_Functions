@@ -28,16 +28,38 @@ btNode *bst_insert(btNode *root, int d){
     return bst_insert_main(root, d);
 }
 
-int isBST(btNode *root){
-    if(!(root)) return 1;
-    if (root->left){
-        if (root->left->data > root->data) return 0;
+/* 
+ * THIS IS SIMPLE BUT WRONG
+ * THERE MAY BE A BIGGER/SMALLER NUMBER IN LEFT/RIGHT BRANCH THAN THE ROOT IN LOWER LEVELS - THIS CASE IS MISSED WHEN WE CHECK WITH THIS SIMPLE METHOD  
+ */
+// int isBST(btNode *root){
+//     if(!(root)) return 1;
+//     if (root->left){
+//         if (root->left->data > root->data) return 0;
+//     }
+//     if (root->right){
+//         if (root->right->data < root->data) return 0;
+//     }
+//     if ( !(isBST(root->left)) + !(isBST(root->right)) ) return 0;
+//     return 1;
+// }
+
+int isBST_main(btNode *root, btNode *l, btNode *r){
+    if (!(root)) return 1;
+    if (l != NULL && root->data <= l->data){
+        return 0;
     }
-    if (root->right){
-        if (root->right->data < root->data) return 0;
+    if (r != NULL && root->data >= r->data){
+        return 0;
     }
-    if ( !(isBST(root->left)) + !(isBST(root->right)) ) return 0;
+    if (!(isBST_main(root->left, l, root)) + !(isBST_main(root->right, root, r))){
+        return 0;
+    }
     return 1;
+}
+
+int isBST(btNode *root){
+    return isBST_main(root, NULL, NULL);
 }
 
 int bst_findMax(btNode *root){
