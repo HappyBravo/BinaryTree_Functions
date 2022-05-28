@@ -1,7 +1,7 @@
 // #include<stdio.h>
 // #include<stdlib.h>
 // #include <stdarg.h>
-#include "python_function.c" // FROM "https://github.com/HappyBravo/python_functions_in_C"
+#include "python_functions.c" // FROM "https://github.com/HappyBravo/python_functions_in_C"
 
 
 struct btElement { // DEFINING ELEMENT FOR BINARY TREE
@@ -11,8 +11,9 @@ struct btElement { // DEFINING ELEMENT FOR BINARY TREE
 };
 
 typedef struct btElement btNode;
-btNode *root = NULL;
+//btNode *root = NULL; // COMMENTED THIS OUT AS IT CAN CONFLICT WITH OTHER PROGRAMS AND FUNCTIONS
 
+// FINDING THE HEIGHT OF THE NODE
 int btheight(btNode *root){
   int left = 1;
   int right = 1;
@@ -25,16 +26,14 @@ int btheight(btNode *root){
   if (root->right){
     right = 1 + btheight(root->right);
   }
-  if (right>left) return right;
-  return left;
-
-  // return ;
+  return (right>left) ? right : left;
 }
 
+// CHECKING IF AN ELEMENT IS AN INTERNAL NODE OR NOT
 int isInternal(btNode *root, int d){
   if (root){
     if (d == root->data){
-      if ((root->right != NULL) || (root->left != NULL)){
+      if ((root->right) || (root->left)){
         return 1;
       }
     }
@@ -43,10 +42,11 @@ int isInternal(btNode *root, int d){
   return 0;
 }
 
+// CHECKING IF AN ELEMENT IS AN EXTERNAL NODE OR NOT
 int isExternal(btNode *root, int d){
   if (root){
     if (d == root->data){
-      if ((root->right == NULL) || (root->left == NULL)){
+      if (!((root->right) || (root->left))){
         return 1;
       }
     }
@@ -55,41 +55,73 @@ int isExternal(btNode *root, int d){
   return 0;
 }
 
-int isPresent(btNode *root, int dat){
-  if (isInternal(root, dat)+isExternal(root, dat)) return 1;
-  return 0;
-}
-
 btNode *searchElement(btNode *root, int d){ // better than isPresent()
-  if (!(root)) return NULL;
+  if (!(root)) return root;
   if (root->data == d) return root;
   btNode *got = NULL;
   got = searchElement(root->left, d);
   if (got) return got;
   got = searchElement(root->right, d);
-  if(got) return got;
+  if (got) return got;
 }
 
-int bt_findMax_main(btNode *root){
-  int left;
-  int Max = 0;
-  int right;
-  if (root) {
-    Max = root->data;
-    left = bt_findMax_main(root->left);
-    right = bt_findMax_main(root->right);
+int isPresent(btNode *root, int dat){
+  // if (isInternal(root, dat)+isExternal(root, dat)) return 1;
+  if(searchElement(root, dat)) return 1;
+  return 0;
+}
 
-    if(Max <= left) Max = left;
-    else if (Max <= right) Max = right;
+// FUNCTION TO FIND THE ADDRESS OF MAXIMUM ELEMENT IN THE TREE/BRANCH
+btNode *bt_findMax_main(btNode *root){
+  btNode *_left = NULL;
+  btNode *Max = root;
+  btNode *_right = NULL;
+  if (root) {
+    // Max = root;
+    _left = bt_findMax_main(root->left);
+    if (_left){
+      if(Max->data < _left->data) Max = _left;
+    }
+    _right = bt_findMax_main(root->right);
+    if (_right){
+      if (Max->data < _right->data) Max = _right;
+    }
   }
   return Max;
 }
 
-int bt_findMax(btNode *root) {
-    if (!(root)) return -1;
+btNode *bt_findMax(btNode *root) {
+    if (!(root)) return root;
     return bt_findMax_main(root);
 }
 
+// FUNCTION TO FIND THE ADDRESS OF MINIMUM ELEMENT IN THE TREE/BRANCH
+btNode *bt_findMin_main(btNode *root){
+  btNode *_left = NULL;
+  btNode *Min = root;
+  btNode *_right = NULL;
+  if (root) {
+    // Max = root;
+    _left = bt_findMin_main(root->left);
+    if (_left){
+      if(Min->data > _left->data) Min = _left;
+    }
+    _right = bt_findMin_main(root->right);
+    if (_right){
+      if (Min->data > _right->data) Min = _right;
+    }
+  }
+  return Min;
+}
+
+btNode *bt_findMin(btNode *root) {
+    if (!(root)) return root;
+    return bt_findMin_main(root);
+}
+
+
+/* 
+// FUNCTION TO FIND THE MINIMUM ELEMENT IN THE BRANCH/TREE 
 int bt_findMin_main(btNode *root){
   int left;
   int Min;
@@ -109,6 +141,7 @@ int bt_findMin(btNode *root) {
     if (!(root)) return -1;
     return bt_findMin_main(root);
 }
+*/
 
 int btNode_level_main(btNode *root, int dat){
   int level = 0;
@@ -158,6 +191,19 @@ int bt_parent(btNode *root, int d){
   if (isPresent(root, d)) return bt_parent_main(root, d);
   return -1;
 }
+
+// int h;
+// int di = 100;
+// printf("\nPrinting Ancestors");
+// h = btNode_depth(root, di);
+// node *anc = create_list(0);
+// while (h-- && h>0){
+//   di = parent(root, di);
+//   if (python_count(anc, di) == 0){
+//     anc = python_append(anc, di);
+//   }
+// }
+// printList(anc);
 
 int isEmpty(btNode *root)
 {
@@ -394,7 +440,6 @@ btNode *bt_deepestNodeAddress(btNode *root, int tree_height){
     if(res) return res;
   }
   // return root;
-
 }
 
 btNode *bt_deleteNode_main(btNode *root, int d){
@@ -461,7 +506,7 @@ void display(btNode *ptr, int level)
 */
 
 // %%%%%%%%%% TREE DISPLAY FUNCTION %%%%%%%%%%%%%%
-int _print_t(btNode *tree, int is_left, int offset, int depth, char s[20][255])
+int _print_t(btNode *tree, int is_left, int offset, int depth, char s[20][512])
 {
     char b[20];
     // char s[20][255];
@@ -521,10 +566,10 @@ int _print_t(btNode *tree, int is_left, int offset, int depth, char s[20][255])
 void print_t(btNode *tree)
 {
     int h = btheight(tree)+6;
-    char s[h][255];
+    char s[h][512]; //s[h][255] 
 
     for (int i = 0; i < h; i++)
-        sprintf(s[i], "%80s", " ");
+        sprintf(s[i], "%255s", " ");
 
     _print_t(tree, 0, 0, 0, s);
 
