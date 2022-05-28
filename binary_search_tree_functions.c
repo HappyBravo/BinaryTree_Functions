@@ -1,36 +1,34 @@
-#include "binary_tree_functions.c"
+#include "binary_tree_functions.c" // FROM "https://github.com/HappyBravo/BinaryTree_Functions"
 
-
+// CHECKING IF THE PASSES ELEMENT IS PRESENT IN THE TREE OR NOT
 int bst_isPresent(btNode *root, int d){
     if (!(root)) return 0;
     if (root->data == d) return 1;
-    if (root->data > d) return bst_isPresent(root->left, d);
-    if (root->data < d) return bst_isPresent(root->right, d);
-
+    else if (root->data > d) return bst_isPresent(root->left, d);
+    else if (root->data < d) return bst_isPresent(root->right, d);
 }
 
+// INSERTING AN ELEMENT IN THE BST
 btNode *bst_insert_main(btNode *root, int d){
     if (!(root)) return createNode(d);
     else{
         if (d < root->data) root->left = bst_insert_main(root->left, d);
-        else{
-            if (d > root->data) root->right = bst_insert_main(root->right, d);
-        }
+        else if (d > root->data) root->right = bst_insert_main(root->right, d);
     }
     return root;
 }
 
 btNode *bst_insert(btNode *root, int d){
     if (isPresent(root, d)) {
-        printf("\n\n>>> %d is already presesnt !\n\n");
-        return 0;
+        printf("\n>>> %d is already presesnt !\n");
+        return root;
     }
     return bst_insert_main(root, d);
 }
 
 /* 
  * THIS IS SIMPLE BUT WRONG
- * THERE MAY BE A BIGGER/SMALLER NUMBER IN LEFT/RIGHT BRANCH THAN THE ROOT IN LOWER LEVELS - THIS CASE IS MISSED WHEN WE CHECK WITH THIS SIMPLE METHOD  
+ * THERE MAY BE A BIGGER/SMALLER NUMBER IN RIGHT/LEFT BRANCH THAN THE ROOT IN LOWER LEVELS - THIS CASE IS MISSED WHEN WE CHECK WITH THIS SIMPLE METHOD  
  */
 // int isBST(btNode *root){
 //     if(!(root)) return 1;
@@ -44,6 +42,7 @@ btNode *bst_insert(btNode *root, int d){
 //     return 1;
 // }
 
+// CHECKING IF THE GIVEN TREE IS A BST OR NOT
 int isBST_main(btNode *root, btNode *l, btNode *r){
     if (!(root)) return 1;
     if (l != NULL && root->data <= l->data){
@@ -62,57 +61,58 @@ int isBST(btNode *root){
     return isBST_main(root, NULL, NULL);
 }
 
-int bst_findMax(btNode *root){
-    if (!(root)) return 0;
-    if (!(root->right)) return root->data;
+// FINDING THE MAXIMUM ELEMENT IN THE BST, RETURNS THE ADDRESS OF THE MAXIMUM ELEMENT
+btNode *bst_findMax(btNode *root){
+    if (!(root)) return root;
+    if (!(root->right)) return root;
     else bst_findMax(root->right);
 }
 
-int bst_findMin(btNode *root){
-    if (!(root)) return 100000;
-    if (!(root->left)) return root->data;
+// FINDING THE MINIMUM ELEMENT IN THE BST, RETURNS THE ADDRESS OF THE MINIMUM ELEMENT
+btNode *bst_findMin(btNode *root){
+    if (!(root)) return root;
+    if (!(root->left)) return root;
     else bst_findMin(root->left);
 }
 
-int bst_inorderSuccessor(btNode *root, int d){
-    if (!(root)) return 0;//NULL;
+btNode *bst_inorderSuccessor(btNode *root, int d){
+    if (!(root)) return root; //NULL;
     if (root->data == d) {
-        if(root->right) {
+        // AFTER LOCATING THE DESIRED ELEMENT,
+        // WE FIND ITS INORDER-SUCCESSOR...
+        if(root->right) { // CHECK IF IT HAS RIGHT CHILD/BRANCH
         return bst_findMin(root->right);
         }
-        // else if(root->left){
-        //     return bst_findMax(root->left);
-        // }
-        return root->data;
+        return root;
     }
-    if (d < root->data) {
+    else if (d < root->data) {
         return bst_inorderSuccessor(root->left, d);
     }
-    else{
-        if (d > root->data) {
-            return bst_inorderSuccessor(root->right, d);
-        }
+    else if (d > root->data) {
+        return bst_inorderSuccessor(root->right, d);
     }
 }
 
-int bst_inorderPredecessor(btNode *root, int d){
-    if (!(root)) return 0;//NULL;
+btNode *bst_inorderPredecessor(btNode *root, int d){
+    if (!(root)) return root; //NULL;
     if (root->data == d) {
-        if(root->left){
+        // AFTER LOCATING THE DESIRED ELEMENT,
+        // WE FIND ITS INORDER-PREDECESSOR...
+        if(root->left){ // CHECK IF IT HAS RIGHT CHILD/BRANCH
             return bst_findMax(root->left);
         }
-        return root->data;
+        return root;
     }
     if (d < root->data) {
         return bst_inorderPredecessor(root->left, d);
     }
-    else{
-        if (d > root->data) {
-            return bst_inorderPredecessor(root->right, d);
-        }
+    else if (d > root->data) {
+        return bst_inorderPredecessor(root->right, d);
     }
 }
 
+/*
+NOW bst_findMin() HANDLES THIS TASK
 btNode *bst_minValAddress(btNode *root){
     btNode *temp = NULL;
     temp = root;
@@ -121,11 +121,16 @@ btNode *bst_minValAddress(btNode *root){
     }
     return temp;
 }
+*/
 
+// FUNCTION TO DELETE AN ELEMENT FROM THE TREE
 btNode *bst_delete_main(btNode *root, int d){
-    if (d<root->data) root->left = bst_delete_main(root->left, d);
-    else if (d>root->data) root->right = bst_delete_main(root->right, d);
+    if (d < root->data) root->left = bst_delete_main(root->left, d);
+    else if (d > root->data) root->right = bst_delete_main(root->right, d);
     else{
+        // IF ELEMENT MATCHES,
+        // CHECK FOR ITS CHILDREN,
+        // IF ONE OR NO CHILD,
         btNode *temp = NULL;
         if (!(root->left)){
             temp = root->right;
@@ -137,7 +142,9 @@ btNode *bst_delete_main(btNode *root, int d){
             root = NULL;
             return temp;
         }
-        temp = bst_minValAddress(root->right);
+        // ELSE IT HAS TWO CHILDREN,
+        // WE MAKE THE INORDER-SUCCESSOR AS THE ROOT THAT BRANCH
+        temp = bst_findMin(root->right);
         root->data = temp->data;
         root->right = bst_delete_main(root->right, temp->data);
     }
@@ -146,6 +153,9 @@ btNode *bst_delete_main(btNode *root, int d){
 
 btNode *bst_delete(btNode *root, int d){
     if(!(root)) return root;
-    if (!(isPresent(root, d))) return root;
+    if (!(isPresent(root, d))) {
+        printf("\n>>> %d is NOT presesnt !\n");
+        return root;
+    }
     return bst_delete_main(root, d); 
 }
