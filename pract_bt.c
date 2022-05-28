@@ -1,5 +1,5 @@
 #include "binary_tree_functions.c"
-
+#include <time.h>
 
 int main(){
   // root = makeNode(7);
@@ -12,7 +12,7 @@ int main(){
   
   // root->left->right->left = makeNode(5);
   // root->right->left->right = makeNode(12);
-  root = createNode(7);
+  btNode *root = createNode(7);
   insertLeft(root, 3);
   insertRight(root, 13);
   
@@ -41,12 +41,22 @@ int main(){
   else printf("Not Present");
 
   node *l = NULL;
-  l = create_list(atoi(python_input("\nEnter length of list : ")));
+  srand(time(NULL));
+  for (int i =0; i< 20; i++){
+      l = python_append(l, rand()%100);
+  }
+  //   l = create_list(atoi(python_input("\nEnter length of list : ")));
   printList(l);
 
   btNode *arr2bt = NULL;
   arr2bt = makeBtfromArr(arr2bt, l);
   print_t(arr2bt);
+
+  printf("\nFinding Max element : \n");
+  printf("Max element is %d", (bt_findMax(arr2bt))->data);
+  printf("\nFinding Min element : \n");
+  printf("Min element is %d", (bt_findMin(arr2bt))->data);
+  root = arr2bt;
 
   // printf("%d\n\n\n", isEmpty(root));
   // print_t(root);
@@ -70,21 +80,18 @@ int main(){
   // printf("\nHeight = %d\n", btheight(root));
   // printf("\n\nLEVEL ORDER TRAVERSAL\n");
   // bt_levelorder(root);
-  /*
+  
   printf("\nChecking Internal : \n");
-  printf("%d", isInternal(root, 11));
+  printf("%d", isInternal(root, atoi(python_input("Enter Element : "))));
   printf("\nChecking External : \n");
-  printf("%d", isExternal(root, 10));
+  printf("%d", isExternal(root, atoi(python_input("Enter Element : "))));
   printf("\nChecking Children : \n");
-  printList(bt_children(root, 12));
+  printList(bt_children(root, atoi(python_input("Enter Element : "))));
   printf("\nHeight of tree : %d\n", btheight(root));
-
-  int n = 10;
-
+  int n = atoi(python_input("Enter Element : "));
   printf("\nLevel of %d is %d\n", n, btNode_level(root, n));
-
   printf("\nParent of %d is %d\n", n, bt_parent(root, n));
-  */
+  
   // printf("\n\n---- NEW TREE ----\n");
   // btNode *new_tree;
   // new_tree = createNode(1);
@@ -106,4 +113,3 @@ int main(){
 
   return 0;
 }
-
